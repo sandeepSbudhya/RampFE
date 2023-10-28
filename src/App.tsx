@@ -13,6 +13,8 @@ export function App() {
   const { data: paginatedTransactions, ...paginatedTransactionsUtils } = usePaginatedTransactions()
   const { data: transactionsByEmployee, ...transactionsByEmployeeUtils } = useTransactionsByEmployee()
   const [isLoading, setIsLoading] = useState(false)
+  //state variable to save state of filterBy if there are more pages of transactions
+  const [filterBy, setFilterBy] = useState("")
 
   const transactions = useMemo(
     () => paginatedTransactions?.data ?? transactionsByEmployee ?? null,
@@ -20,6 +22,7 @@ export function App() {
   )
 
   const loadAllTransactions = useCallback(async () => {
+    //if list of employees already exist drop down need not load
     if (employees === null) {
       setIsLoading(true)
       transactionsByEmployeeUtils.invalidateData()
@@ -64,6 +67,8 @@ export function App() {
             if (newValue === null) {
               return
             }
+            setFilterBy(newValue.id)
+            //filterBy employee
             if (newValue.id === "") {
               await loadAllTransactions()
               return
@@ -76,12 +81,16 @@ export function App() {
 
         <div className="RampGrid">
           <Transactions transactions={transactions} />
-
+          {/* if there is no next page then dont show the button */}
           {transactions !== null && paginatedTransactions?.nextPage && (
             <button
               className="RampButton"
               disabled={paginatedTransactionsUtils.loading}
               onClick={async () => {
+                if (filterBy) {
+                  await loadTransactionsByEmployee("filterBy")
+                  return
+                }
                 await loadAllTransactions()
               }}
             >

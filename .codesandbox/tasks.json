@@ -12,17 +12,18 @@
     "start": {
       "name": "start",
       "command": "yarn start",
-      "runAtStart": true
+      "runAtStart": true,
+      "preview": {
+        "port": 3000
+      }
     },
     "upload": {
       "name": "upload",
-      "command": "yarn upload",
-      "runAtStart": false
+      "command": "yarn upload"
     },
     "format": {
       "name": "format",
-      "command": "yarn format",
-      "runAtStart": false
+      "command": "yarn format"
     }
   }
 }

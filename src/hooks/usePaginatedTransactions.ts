@@ -11,11 +11,12 @@ export function usePaginatedTransactions(): PaginatedTransactionsResult {
 
   const fetchAll = useCallback(async () => {
     let pageToFetch: number = 0
+    // first call returns first page, after that if next page is null, then no fetch occurs
     if (paginatedTransactions !== null) {
       if (paginatedTransactions.nextPage !== null) {
         pageToFetch = paginatedTransactions.nextPage
       } else {
-        setPaginatedTransactions({ data: [], nextPage: null })
+        setPaginatedTransactions({ ...paginatedTransactions, nextPage: null })
         return
       }
     }

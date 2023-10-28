@@ -71,6 +71,7 @@ export function InputSelect<TItem>({
                 "RampInputSelect--dropdown-container-opened": isOpen,
               })}
               {...getMenuProps()}
+              // set position to absolute to fix the drop down
               style={{ position: "absolute", top: dropdownPosition.top, left: dropdownPosition.left }}
             >
               {renderItems()}
