@@ -7,6 +7,7 @@ export const InputCheckbox: InputCheckboxComponent = ({ id, checked = false, dis
 
   return (
     <div className="RampInputCheckbox--container" data-testid={inputId}>
+      {/* this component overlaps the button and prevented it from getting checked */}
       <label
         onClick={() => onChange(!checked)}
         className={classNames("RampInputCheckbox--label", {
