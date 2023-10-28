@@ -12,7 +12,6 @@ export function App() {
   const { data: employees, ...employeeUtils } = useEmployees()
   const { data: paginatedTransactions, ...paginatedTransactionsUtils } = usePaginatedTransactions()
   const { data: transactionsByEmployee, ...transactionsByEmployeeUtils } = useTransactionsByEmployee()
-  const [filterBy, setFilterBy] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
   const transactions = useMemo(
@@ -21,14 +20,14 @@ export function App() {
   )
 
   const loadAllTransactions = useCallback(async () => {
-    setIsLoading(true)
-    transactionsByEmployeeUtils.invalidateData()
-
-    await employeeUtils.fetchAll()
+    if (employees === null) {
+      setIsLoading(true)
+      transactionsByEmployeeUtils.invalidateData()
+      await employeeUtils.fetchAll()
+      setIsLoading(false)
+    }
     await paginatedTransactionsUtils.fetchAll()
-
-    setIsLoading(false)
-  }, [employeeUtils, paginatedTransactionsUtils, transactionsByEmployeeUtils])
+  }, [employeeUtils, employees, paginatedTransactionsUtils, transactionsByEmployeeUtils])
 
   const loadTransactionsByEmployee = useCallback(
     async (employeeId: string) => {
@@ -65,7 +64,10 @@ export function App() {
             if (newValue === null) {
               return
             }
-            setFilterBy(newValue.id)
+            if (newValue.id === "") {
+              await loadAllTransactions()
+              return
+            }
             await loadTransactionsByEmployee(newValue.id)
           }}
         />
@@ -75,15 +77,11 @@ export function App() {
         <div className="RampGrid">
           <Transactions transactions={transactions} />
 
-          {transactions !== null && (
+          {transactions !== null && paginatedTransactions?.nextPage && (
             <button
               className="RampButton"
               disabled={paginatedTransactionsUtils.loading}
               onClick={async () => {
-                if(filterBy) {
-                  await loadTransactionsByEmployee(filterBy)
-                  return
-                }
                 await loadAllTransactions()
               }}
             >
